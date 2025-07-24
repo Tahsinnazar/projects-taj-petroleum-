@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petroleum Vehicle Operations Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1526 0%, #142d4c 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e7ff;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 20px;
+            background: rgba(10, 30, 60, 0.7);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(64, 156, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ffd700, #ffb300);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #a0c4ff;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(20, 45, 90, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(64, 156, 255, 0.2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #ffb300, #ffd700);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #a0c4ff;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 500px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: rgba(20, 45, 90, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(64, 156, 255, 0.2);
+        }
+
+        .panel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-title {
+            color: #ffd700;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .panel-title i {
+            font-size: 1.3rem;
+            color: #ffb300;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #a0c4ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 14px 14px 14px 45px;
+            border: 2px solid rgba(64, 156, 255, 0.3);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background: rgba(10, 30, 60, 0.7);
+            color: #e0e7ff;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #ffb300;
+            box-shadow: 0 0 0 3px rgba(255, 179, 0, 0.3);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 42px;
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn i {
+            font-size: 1.2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffb300, #ff8c00);
+            color: #0a1526;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #3a506b, #1c2541);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-small {
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+
+        .active-vehicles-section {
+            margin-bottom: 20px;
+        }
+
+        .active-vehicle-card {
+            background: rgba(10, 30, 60, 0.6);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ffb300;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(64, 156, 255, 0.2);
+        }
+
+        .active-vehicle-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+            background: rgba(20, 45, 90, 0.9);
+        }
+
+        .active-vehicle-card.selected {
+            border-left-color: #ff8c00;
+            background: rgba(30, 60, 120, 0.8);
+            box-shadow: 0 3px 20px rgba(255, 140, 0, 0.4);
+        }
+
+        .active-vehicle-card.completed {
+            border-left-color: #4CAF50;
+            background: rgba(20, 90, 50, 0.6);
+        }
+
+        .vehicle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .vehicle-number {
+            font-weight: bold;
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        .vehicle-details {
+            font-size: 0.95rem;
+            color: #a0c4ff;
+            margin-bottom: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .vehicle-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .step-control-panel {
+            margin-bottom: 20px;
+        }
+
+        .current-vehicle-display {
+            background: rgba(10, 40, 80, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #409cff;
+            border: 1px solid rgba(64, 156, 255, 0.3);
+        }
+
+        .process-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .step-btn {
+            padding: 16px;
+            border: 2px solid rgba(64, 156, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(10, 30, 60, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-weight: 600;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #e0e7ff;
+        }
+
+        .step-btn.completed {
+            background: rgba(20, 90, 50, 0.5);
+            color: #a5d6a7;
+            border-color: #4CAF50;
+        }
+
+        .step-btn.active {
+            background: rgba(255, 140, 0, 0.2);
+            color: #ffd700;
+            border-color: #ffb300;
+            animation: pulse-border 2s infinite;
+        }
+
+        .step-btn.disabled {
+            background: rgba(20, 45, 90, 0.5);
+            color: #8a9fb4;
+            cursor: not-allowed;
+        }
+
+        .step-main-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-timing-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 0.9rem;
+            gap: 3px;
+        }
+
+        .step-duration {
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .timer-display {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ffb300;
+            text-align: center;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(255, 179, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 179, 0, 0.3);
+            font-family: monospace;
+        }
+
+        .camera-preview {
+            width: 100%;
+            height: 220px;
+            background: rgba(10, 30, 60, 0.7);
+            border: 2px dashed rgba(64, 156, 255, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .camera-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .camera-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .vehicle-list {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .vehicle-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .vehicle-list::-webkit-scrollbar-track {
+            background: rgba(10, 30, 60, 0.5);
+            border-radius: 10px;
+        }
+
+        .vehicle-list::-webkit-scrollbar-thumb {
+            background: #409cff;
+            border-radius: 10px;
+        }
+
+        .vehicle-list::-webkit-scrollbar-thumb:hover {
+            background: #ffb300;
+        }
+
+        .timing-analysis {
+            margin-bottom: 30px;
+        }
+
+        .timing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .timing-card {
+            background: rgba(10, 30, 60, 0.7);
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(64, 156, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .timing-card:hover {
+            transform: scale(1.05);
+            border-color: #ffb300;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .timing-value {
+            font-size: 1.9rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .timing-label {
+            font-size: 0.95rem;
+            color: #a0c4ff;
+        }
+
+        .reports-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(64, 156, 255, 0.2);
+            color: #e0e7ff;
+        }
+
+        .report-table th {
+            background: rgba(10, 40, 80, 0.7);
+            font-weight: 600;
+            color: #ffd700;
+            position: sticky;
+            top: 0;
+        }
+
+        .report-table tr:hover {
+            background: rgba(20, 45, 90, 0.5);
+        }
+
+        .step-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .progress-container {
+            height: 8px;
+            background: rgba(64, 156, 255, 0.2);
+            border-radius: 4px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffb300, #ffd700);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .vehicle-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-processing {
+            background: rgba(255, 179, 0, 0.2);
+            color: #ffd700;
+        }
+        
+        .status-completed {
+            background: rgba(76, 175, 80, 0.2);
+            color: #a5d6a7;
+        }
+
+        .status-selected {
+            background: rgba(64, 156, 255, 0.2);
+            color: #a0c4ff;
+        }
+        
+        .time-display {
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        
+        .step-time-display {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffd700;
+        }
+        
+        .image-placeholder {
+            background: rgba(10, 30, 60, 0.7);
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #8a9fb4;
+            font-size: 0.95rem;
+            border: 1px dashed rgba(64, 156, 255, 0.3);
+        }
+        
+        .report-image {
+            width: 100px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid rgba(64, 156, 255, 0.3);
+            cursor: pointer;
+            transition: transform 0.2s;
+            background: rgba(10, 30, 60, 0.7);
+        }
+        
+        .report-image:hover {
+            transform: scale(1.05);
+            border-color: #ffb300;
+        }
+
+        .no-vehicle-selected {
+            text-align: center;
+            color: #8a9fb4;
+            padding: 40px;
+            background: rgba(10, 30, 60, 0.5);
+            border-radius: 10px;
+            border: 2px dashed rgba(64, 156, 255, 0.3);
+        }
+
+        .no-vehicle-selected i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: rgba(64, 156, 255, 0.5);
+        }
+
+        .step-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .step-control-btn {
+            flex: 1;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(64, 156, 255, 0.3);
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        /* Search Bar Styles */
+        .vehicle-search {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .vehicle-search input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 2px solid rgba(64, 156, 255, 0.3);
+            border-radius: 10px;
+            font-size: 1rem;
+            background: rgba(10, 30, 60, 0.7);
+            color: #e0e7ff;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .vehicle-search input:focus {
+            outline: none;
+            border-color: #ffb300;
+            box-shadow: 0 0 0 3px rgba(255, 179, 0, 0.3);
+        }
+
+        .vehicle-search input::placeholder {
+            color: #8a9fb4;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffd700;
+            font-size: 1.1rem;
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8a9fb4;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+            display: none;
+        }
+
+        .clear-search:hover {
+            color: #ffb300;
+        }
+
+        .clear-search.show {
+            display: block;
+        }
+
+        /* Combined Export Button Styles */
+        .combined-export-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .combined-export-btn {
+            background: linear-gradient(135deg, #6a4c93, #9d4edd);
+            color: white;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 10px;
+        }
+
+        .combined-export-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(157, 78, 221, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { border-color: #ffb300; }
+            50% { border-color: #ffd700; }
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 18px 28px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.05rem;
+            border-left: 5px solid #a5d6a7;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-left: 5px solid #e57373;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #142d4c, #0a1526);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 179, 0, 0.3);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #8a9fb4;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: #ffb300;
+        }
+
+        .step-images {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .step-image-card {
+            border: 1px solid rgba(64, 156, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            background: rgba(10, 30, 60, 0.7);
+        }
+
+        .step-image-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border-color: #ffb300;
+        }
+        
+        .step-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: rgba(10, 30, 60, 0.7);
+        }
+
+        @media (max-width: 1024px) {
+            .main-content, .reports-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .step-images {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Camera selector */
+        .camera-selector {
+            margin-bottom: 15px;
+        }
+        
+        .camera-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #a0c4ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .camera-selector select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(64, 156, 255, 0.3);
+            border-radius: 10px;
+            font-size: 1rem;
+            background: rgba(10, 30, 60, 0.7);
+            color: #e0e7ff;
+        }
+        
+        .camera-selector select:focus {
+            outline: none;
+            border-color: #ffb300;
+        }
+        
+        /* Camera status indicators */
+        .camera-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .camera-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #e74c3c;
+        }
+        
+        .camera-indicator.active {
+            background-color: #2ecc71;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .camera-indicator.recording {
+            background-color: #e74c3c;
+            animation: pulse 0.8s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-message">Operation completed successfully!</span>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-oil-well"></i> PETROLEUM VEHICLE OPERATIONS DASHBOARD</h1>
+            <p>Real-time multi-vehicle tracking with automated camera capture & detailed timing reports</p>
+        </div>
+
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number" id="totalVehicles">0</div>
+                <div class="stat-label">Total Vehicles Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeVehicles">0</div>
+                <div class="stat-label">Currently Processing</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedVehicles">0</div>
+                <div class="stat-label">Completed Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgProcessTime">0</div>
+                <div class="stat-label">Avg Process Time (min)</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="panel">
+                    <h2 class="panel-title"><i class="fas fa-truck-moving"></i> New Vehicle Entry</h2>
+                    
+                    <div class="input-group">
+                        <label for="vehicleNumber"><i class="fas fa-truck"></i> Vehicle Number</label>
+                        <div class="input-icon"><i class="fas fa-hashtag"></i></div>
+                        <input type="text" id="vehicleNumber" placeholder="Enter vehicle number (e.g., ABC-1234)" pattern="[A-Za-z]{2,3}-[0-9]{3,4}">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="products"><i class="fas fa-flask"></i> Products</label>
+                        <div class="input-icon"><i class="fas fa-tint"></i></div>
+                        <input type="text" id="products" placeholder="Enter product name">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="capacity"><i class="fas fa-weight-hanging"></i> Capacity (KL)</label>
+                        <div class="input-icon"><i class="fas fa-oil-can"></i></div>
+                        <select id="capacity">
+                            <option value="10">10 KL</option>
+                            <option value="15">15 KL</option>
+                            <option value="20">20 KL</option>
+                            <option value="21">21 KL</option>
+                            <option value="24">24 KL</option>
+                            <option value="25">25 KL</option>
+                            <option value="30">30 KL</option>
+                            <option value="32">32 KL</option>
+                            <option value="40" selected>40 KL</option>
+                            <option value="44">44 KL</option>
+                            <option value="45">45 KL</option>
+                            <option value="48">48 KL</option>
+                            <option value="50">50 KL</option>
+                            <option value="52">52 KL</option>
+                            <option value="54">54 KL</option>
+                            <option value="60">60 KL</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="startVehicleProcess()">
+                        <i class="fas fa-play-circle"></i> Start Vehicle Process
+                    </button>
+                </div>
+
+                <div class="panel">
+                    <h2 class="panel-title"><i class="fas fa-tasks"></i> Step Control Panel</h2>
+                    
+                    <div id="noVehicleSelected" class="no-vehicle-selected">
+                        <i class="fas fa-hand-pointer"></i>
+                        <h3>No Vehicle Selected</h3>
+                        <p>Please select a vehicle from the active vehicles list to control its process steps.</p>
+                    </div>
+
+                    <div id="vehicleStepControl" style="display: none;">
+                        <div class="current-vehicle-display">
+                            <h3 style="margin-bottom: 15px; color: #409cff;">
+                                <i class="fas fa-truck-loading"></i> Current Vehicle: <span id="currentVehicleNumber">ABC-1234</span>
+                            </h3>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="processProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="timer-display" id="currentStepTimer">
+                            <i class="fas fa-clock"></i> Current Step Time: <span class="time-display">00:00</span>
+                        </div>
+
+                        <div class="process-steps" id="processSteps">
+                            <!-- Steps will be dynamically generated here -->
+                        </div>
+                        
+                        <div class="step-controls">
+                            <button class="btn btn-warning step-control-btn" onclick="previousStep()">
+                                <i class="fas fa-arrow-left"></i> Previous Step
+                            </button>
+                            <button class="btn btn-success step-control-btn" onclick="nextStep()">
+                                Next Step <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        
+                        <button class="btn btn-danger" onclick="resetCurrentProcess()">
+                            <i class="fas fa-times-circle"></i> Reset Current Process
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2 class="panel-title"><i class="fas fa-video"></i> Vehicle Tracking & Camera</h2>
+                
+                <div style="margin-bottom: 25px;">
+                    <div class="camera-selector">
+                        <label for="cameraDevice"><i class="fas fa-camera"></i> Select Camera</label>
+                        <select id="cameraDevice">
+                            <option value="">Loading cameras...</option>
+                        </select>
+                        <div class="camera-status">
+                            <span class="camera-indicator" id="cameraStatusIndicator"></span>
+                            <span id="cameraStatusText">Camera not connected</span>
+                        </div>
+                    </div>
+                    
+                    <div class="camera-preview" id="cameraPreview">
+                        <video id="cameraFeed" autoplay playsinline style="display: none;"></video>
+                        <img id="cameraImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='480' viewBox='0 0 640 480'%3E%3Crect width='640' height='480' fill='%23142d4c'/%3E%3Cpath d='M320 240a80 80 0 1 0 0-160 80 80 0 0 0 0 160zm0-120a40 40 0 1 1 0 80 40 40 0 0 1 0-80z' fill='%23409cff'/%3E%3Ccircle cx='320' cy='240' r='20' fill='%23409cff'/%3E%3Cpath d='M480 120h-80l-40-40H280l-40 40h-80v240h320V120z' fill='none' stroke='%23409cff' stroke-width='2'/%3E%3C/svg%3E" alt="Camera Preview" style="display: block;">
+                    </div>
+                    
+                    <div class="camera-controls">
+                        <button class="btn btn-success" id="startCameraBtn" onclick="startCamera()">
+                            <i class="fas fa-camera"></i> Start Camera
+                        </button>
+                        <button class="btn btn-warning" id="captureBtn" onclick="captureImage()" disabled>
+                            <i class="fas fa-camera-retro"></i> Capture Photo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="active-vehicles-section">
+                    <h3 class="panel-title"><i class="fas fa-list"></i> Active Vehicles</h3>
+                    
+                    <!-- Vehicle Search Bar -->
+                    <div class="vehicle-search">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="vehicleSearchInput" placeholder="Search vehicles by number, product, or capacity..." oninput="filterVehicles()">
+                        <i class="fas fa-times clear-search" id="clearSearch" onclick="clearVehicleSearch()"></i>
+                    </div>
+                    
+                    <div class="vehicle-list" id="vehicleList">
+                        <div class="no-vehicle-selected">
+                            <i class="fas fa-truck"></i>
+                            <p>No active vehicles</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel timing-analysis">
+            <h2 class="panel-title"><i class="fas fa-chart-line"></i> Average Step Timing Analysis (Minutes)</h2>
+            <div class="timing-grid">
+                <div class="timing-card">
+                    <div class="timing-value" id="avgLoadingSlip">0.0</div>
+                    <div class="timing-label">Loading Slip</div>
+                </div>
+                <div class="timing-card">
+                    <div class="timing-value" id="avgGateIn">0.0</div>
+                    <div class="timing-label">Gate In</div>
+                </div>
+                <div class="timing-card">
+                    <div class="timing-value" id="avgInitialWeight">0.0</div>
+                    <div class="timing-label">Initial Weight</div>
+                </div>
+                <div class="timing-card">
+                    <div class="timing-value" id="avgLoading">0.0</div>
+                    <div class="timing-label">Loading</div>
+                </div>
+                <div class="timing-card">
+                    <div class="timing-value" id="avgFinalWeight">0.0</div>
+                    <div class="timing-label">Final Weight</div>
+                </div>
+                <div class="timing-card">
+                    <div class="timing-value" id="avgSealing">0.0</div>
+                    <div class="timing-label">Sealing</div>
+                </div>
+                <div class="timing-card">
+                    <div class="timing-value" id="avgInvoice">0.0</div>
+                    <div class="timing-label">Invoice</div>
+                </div>
+                <div class="timing-card">
+                    <div class="timing-value" id="avgGateOut">0.0</div>
+                    <div class="timing-label">Gate Out</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Combined Export Section -->
+        <div class="panel combined-export-section">
+            <h2 class="panel-title"><i class="fas fa-download"></i> Export Combined Reports</h2>
+            <p style="color: #a0c4ff; margin-bottom: 20px; text-align: center;">
+                Export both Completed Vehicles Report and Recent Process Times in a single file
+            </p>
+            <button class="combined-export-btn" onclick="exportCombinedReport()">
+                <i class="fas fa-file-csv"></i>
+                Export Combined CSV Report
+            </button>
+        </div>
+
+        <div class="reports-section">
+            <div class="panel">
+                <h2 class="panel-title"><i class="fas fa-file-alt"></i> Completed Vehicles Report</h2>
+                <div class="table-container">
+                    <table class="report-table" id="completedVehiclesTable">
+                        <thead>
+                            <tr>
+                                <th>Vehicle</th>
+                                <th>Product</th>
+                                <th>Capacity</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Duration</th>
+                                <th>Images</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Completed vehicles will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn btn-secondary" onclick="exportCompletedVehicles('csv')">
+                        <i class="fas fa-file-csv"></i> Export CSV
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportCompletedVehicles('excel')">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="report-header">
+                    <h2 class="panel-title"><i class="fas fa-clock"></i> Recent Process Times</h2>
+                    <div class="export-buttons">
+                        <button class="btn btn-secondary" onclick="exportRecentProcessTimes('csv')">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportRecentProcessTimes('excel')">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="report-table" id="recentProcessTable">
+                        <thead>
+                            <tr>
+                                <th>Vehicle</th>
+                                <th>Loading Slip</th>
+                                <th>Gate In</th>
+                                <th>Initial Weight</th>
+                                <th>Loading</th>
+                                <th>Final Weight</th>
+                                <th>Sealing</th>
+                                <th>Invoice</th>
+                                <th>Gate Out</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Recent process times will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 style="color: #ffd700; margin-bottom: 15px;"><i class="fas fa-images"></i> Vehicle Inspection Images</h2>
+            <p style="color: #a0c4ff; margin-bottom: 20px;">Detailed images captured during the process for vehicle <span id="modalVehicleNumber" style="color: #ffd700;"></span></p>
+            
+            <div class="step-images" id="stepImagesContainer">
+                <!-- Step images will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Step definitions
+        const STEPS = [
+            { id: 1, name: "Loading Slip", icon: "fas fa-clipboard-list" },
+            { id: 2, name: "Gate In", icon: "fas fa-door-open" },
+            { id: 3, name: "Initial Weight", icon: "fas fa-weight-hanging" },
+            { id: 4, name: "Loading", icon: "fas fa-gas-pump" },
+            { id: 5, name: "Final Weight", icon: "fas fa-balance-scale" },
+            { id: 6, name: "Sealing", icon: "fas fa-lock" },
+            { id: 7, name: "Invoice", icon: "fas fa-file-invoice-dollar" },
+            { id: 8, name: "Gate Out", icon: "fas fa-door-closed" }
+        ];
+
+        // Vehicle data storage
+        let vehicles = [];
+        let currentVehicleId = null;
+        let timerInterval = null;
+        let stepStartTime = null;
+        let currentStepTime = 0;
+        
+        // Camera variables
+        let cameraStream = null;
+        let currentCameraId = null;
+        let cameras = [];
+
+        // Initialize the dashboard
+        function initDashboard() {
+            // Initialize step control panel
+            renderStepButtons();
+            
+            // Update statistics
+            updateStatistics();
+            
+            // Setup cameras
+            setupCameras();
+        }
+
+        // Set up available cameras
+        async function setupCameras() {
+            const cameraSelect = document.getElementById('cameraDevice');
+            cameraSelect.innerHTML = '<option value="">Loading cameras...</option>';
+            
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                cameras = devices.filter(device => device.kind === 'videoinput');
+                
+                if (cameras.length === 0) {
+                    cameraSelect.innerHTML = '<option value="">No cameras found</option>';
+                    showNotification('No cameras detected', true);
+                    return;
+                }
+                
+                cameraSelect.innerHTML = '<option value="">Select a camera</option>';
+                cameras.forEach((camera, index) => {
+                    cameraSelect.innerHTML += `<option value="${camera.deviceId}">Camera ${index + 1}${camera.label ? ` (${camera.label})` : ''}</option>`;
+                });
+                
+                // Auto-select first camera
+                if (cameras.length > 0) {
+                    cameraSelect.value = cameras[0].deviceId;
+                    updateCameraStatus('Camera ready', 'active');
+                }
+            } catch (error) {
+                console.error('Error accessing cameras:', error);
+                cameraSelect.innerHTML = '<option value="">Camera access error</option>';
+                showNotification('Camera access error: ' + error.message, true);
+                updateCameraStatus('Camera error', 'error');
+            }
+        }
+        
+        // Update camera status UI
+        function updateCameraStatus(text, status) {
+            const indicator = document.getElementById('cameraStatusIndicator');
+            const statusText = document.getElementById('cameraStatusText');
+            
+            statusText.textContent = text;
+            indicator.className = 'camera-indicator';
+            
+            if (status === 'active') {
+                indicator.classList.add('active');
+            } else if (status === 'recording') {
+                indicator.classList.add('recording');
+            } else if (status === 'error') {
+                // Keep default red
+            }
+        }
+
+        // Start selected camera
+        async function startCamera() {
+            const cameraSelect = document.getElementById('cameraDevice');
+            const cameraId = cameraSelect.value;
+            
+            if (!cameraId) {
+                showNotification('Please select a camera first', true);
+                return;
+            }
+            
+            // Stop any existing stream
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            
+            try {
+                // Request camera access
+                cameraStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        deviceId: { exact: cameraId },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                
+                const video = document.getElementById('cameraFeed');
+                video.srcObject = cameraStream;
+                video.style.display = 'block';
+                document.getElementById('cameraImage').style.display = 'none';
+                document.getElementById('captureBtn').disabled = false;
+                
+                updateCameraStatus('Camera active', 'recording');
+                showNotification('Camera feed started');
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                showNotification('Failed to start camera: ' + error.message, true);
+                updateCameraStatus('Camera error', 'error');
+            }
+        }
+
+        // Capture an image from the camera
+        function captureImage() {
+            if (!cameraStream) {
+                showNotification('Camera is not active. Start camera first.', true);
+                return;
+            }
+            
+            if (!currentVehicleId) {
+                showNotification('Please select a vehicle first', true);
+                return;
+            }
+            
+            const video = document.getElementById('cameraFeed');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Convert canvas to data URL
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Set the image element source
+            const image = document.getElementById('cameraImage');
+            image.src = dataUrl;
+            image.style.display = 'block';
+            video.style.display = 'none';
+            
+            // Store the image for the current step
+            captureImageForStep(dataUrl);
+            
+            showNotification('Image captured successfully');
+        }
+        
+        // Store captured image for the current step
+        function captureImageForStep(imageData) {
+            if (!currentVehicleId) return;
+            
+            const vehicleIndex = vehicles.findIndex(v => v.id === currentVehicleId);
+            if (vehicleIndex === -1) return;
+            
+            const step = vehicles[vehicleIndex].step;
+            const stepName = STEPS[step - 1].name;
+            vehicles[vehicleIndex].images[step] = {
+                name: stepName,
+                dataUrl: imageData,
+                timestamp: new Date()
+            };
+        }
+
+        // Render step buttons in the control panel
+        function renderStepButtons() {
+            const processSteps = document.getElementById('processSteps');
+            processSteps.innerHTML = '';
+            
+            STEPS.forEach(step => {
+                const stepBtn = document.createElement('div');
+                stepBtn.className = 'step-btn disabled';
+                stepBtn.dataset.step = step.id;
+                stepBtn.innerHTML = `
+                    <div class="step-main-info">
+                        <i class="${step.icon}"></i>
+                        <span>${step.id}. ${step.name}</span>
+                    </div>
+                    <div class="step-timing-info">
+                        <div class="step-duration">--:--</div>
+                    </div>
+                `;
+                processSteps.appendChild(stepBtn);
+            });
+        }
+
+        // Start vehicle process
+        function startVehicleProcess() {
+            const vehicleNumber = document.getElementById('vehicleNumber').value;
+            const products = document.getElementById('products').value;
+            const capacity = document.getElementById('capacity').value;
+            
+            if (!vehicleNumber || !products) {
+                showNotification('Please fill all required fields', true);
+                return;
+            }
+            
+            // Create new vehicle object
+            const newVehicle = {
+                id: Date.now(),
+                number: vehicleNumber,
+                product: products,
+                capacity: `${capacity} KL`,
+                status: "processing",
+                step: 1,
+                stepTimes: {},
+                startTime: new Date(),
+                stepStartTime: new Date(),
+                images: {}
+            };
+            
+            // Add to vehicles array
+            vehicles.push(newVehicle);
+            
+            // Select this vehicle
+            selectVehicle(newVehicle.id);
+            
+            // Update statistics
+            updateStatistics();
+            
+            // Reset form
+            document.getElementById('vehicleNumber').value = '';
+            document.getElementById('products').value = '';
+            
+            showNotification('Vehicle process started successfully!');
+        }
+
+        // Select a vehicle
+        function selectVehicle(vehicleId) {
+            currentVehicleId = vehicleId;
+            const vehicle = vehicles.find(v => v.id === vehicleId);
+            
+            if (!vehicle) return;
+            
+            // Update UI
+            document.getElementById('noVehicleSelected').style.display = 'none';
+            document.getElementById('vehicleStepControl').style.display = 'block';
+            document.getElementById('currentVehicleNumber').textContent = vehicle.number;
+            
+            // Update vehicle list selection
+            updateVehicleList();
+            
+            // Update step controls
+            updateStepControls(vehicle);
+            
+            // Start step timer
+            startStepTimer(vehicle);
+        }
+
+        // Update step controls for selected vehicle
+        function updateStepControls(vehicle) {
+            const stepButtons = document.querySelectorAll('#processSteps .step-btn');
+            const progressBar = document.getElementById('processProgress');
+            
+            // Calculate progress percentage
+            const progress = ((vehicle.step - 1) / STEPS.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Update step buttons
+            stepButtons.forEach((btn, index) => {
+                const stepNum = index + 1;
+                btn.className = 'step-btn disabled';
+                
+                if (stepNum < vehicle.step) {
+                    btn.className = 'step-btn completed';
+                    const duration = vehicle.stepTimes[stepNum] || 0;
+                    btn.querySelector('.step-duration').textContent = formatTime(duration);
+                } else if (stepNum === vehicle.step) {
+                    btn.className = 'step-btn active';
+                    btn.querySelector('.step-duration').textContent = '--:--';
+                }
+            });
+        }
+
+        // Start step timer
+        function startStepTimer(vehicle) {
+            clearInterval(timerInterval);
+            
+            // Calculate elapsed time for current step
+            const now = new Date();
+            const elapsed = Math.floor((now - vehicle.stepStartTime) / 1000);
+            currentStepTime = elapsed;
+            
+            // Update timer display
+            updateTimerDisplay();
+            
+            // Start interval to update timer
+            timerInterval = setInterval(() => {
+                currentStepTime++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            const minutes = Math.floor(currentStepTime / 60).toString().padStart(2, '0');
+            const seconds = (currentStepTime % 60).toString().padStart(2, '0');
+            document.querySelector('.time-display').textContent = `${minutes}:${seconds}`;
+        }
+
+        // Move to next step
+        function nextStep() {
+            if (!currentVehicleId) return;
+            
+            const vehicleIndex = vehicles.findIndex(v => v.id === currentVehicleId);
+            if (vehicleIndex === -1) return;
+            
+            const vehicle = vehicles[vehicleIndex];
+            
+            // Save current step time
+            vehicle.stepTimes[vehicle.step] = currentStepTime;
+            
+            // Move to next step if not last step
+            if (vehicle.step < STEPS.length) {
+                vehicle.step++;
+                vehicle.stepStartTime = new Date();
+                currentStepTime = 0;
+                
+                // Update UI
+                updateStepControls(vehicle);
+                startStepTimer(vehicle);
+                updateVehicleList();
+                
+                showNotification(`Moved to step ${vehicle.step}: ${STEPS[vehicle.step-1].name}`);
+            } else {
+                // Complete the process
+                vehicle.status = "completed";
+                vehicle.endTime = new Date();
+                
+                // Update UI
+                updateStepControls(vehicle);
+                updateVehicleList();
+                updateStatistics();
+                updateReports();
+                
+                showNotification(`Process completed for vehicle ${vehicle.number}`);
+            }
+        }
+
+        // Move to previous step
+        function previousStep() {
+            if (!currentVehicleId) return;
+            
+            const vehicleIndex = vehicles.findIndex(v => v.id === currentVehicleId);
+            if (vehicleIndex === -1) return;
+            
+            const vehicle = vehicles[vehicleIndex];
+            
+            // Only allow going back if not on first step
+            if (vehicle.step > 1) {
+                // Save current step time
+                vehicle.stepTimes[vehicle.step] = currentStepTime;
+                
+                vehicle.step--;
+                vehicle.stepStartTime = new Date();
+                currentStepTime = vehicle.stepTimes[vehicle.step] || 0;
+                
+                // Update UI
+                updateStepControls(vehicle);
+                startStepTimer(vehicle);
+                updateVehicleList();
+                
+                showNotification(`Moved to step ${vehicle.step}: ${STEPS[vehicle.step-1].name}`);
+            }
+        }
+
+        // Filter vehicles based on search input
+        function filterVehicles() {
+            const searchInput = document.getElementById('vehicleSearchInput');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const clearButton = document.getElementById('clearSearch');
+            
+            // Show/hide clear button
+            if (searchTerm) {
+                clearButton.classList.add('show');
+            } else {
+                clearButton.classList.remove('show');
+            }
+            
+            updateVehicleList(searchTerm);
+        }
+
+        // Clear vehicle search
+        function clearVehicleSearch() {
+            const searchInput = document.getElementById('vehicleSearchInput');
+            const clearButton = document.getElementById('clearSearch');
+            
+            searchInput.value = '';
+            clearButton.classList.remove('show');
+            updateVehicleList();
+        }
+
+        // Update vehicle list display with optional search filter
+        function updateVehicleList(searchTerm = '') {
+            const vehicleList = document.getElementById('vehicleList');
+            vehicleList.innerHTML = '';
+            
+            // Filter vehicles based on search term
+            let filteredVehicles = vehicles;
+            if (searchTerm) {
+                filteredVehicles = vehicles.filter(vehicle => 
+                    vehicle.number.toLowerCase().includes(searchTerm) ||
+                    vehicle.product.toLowerCase().includes(searchTerm) ||
+                    vehicle.capacity.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (filteredVehicles.length === 0) {
+                const message = searchTerm ? 
+                    `<div class="no-vehicle-selected"><i class="fas fa-search"></i><p>No vehicles found matching "${searchTerm}"</p></div>` :
+                    '<div class="no-vehicle-selected"><i class="fas fa-truck"></i><p>No active vehicles</p></div>';
+                vehicleList.innerHTML = message;
+                return;
+            }
+            
+            filteredVehicles.forEach(vehicle => {
+                const card = document.createElement('div');
+                card.className = `active-vehicle-card ${vehicle.status === 'completed' ? 'completed' : ''} ${vehicle.id === currentVehicleId ? 'selected' : ''}`;
+                card.onclick = () => selectVehicle(vehicle.id);
+                
+                card.innerHTML = `
+                    <div class="vehicle-header">
+                        <div class="vehicle-number">${vehicle.number}</div>
+                        <span class="vehicle-status ${vehicle.status === 'completed' ? 'status-completed' : 'status-processing'} ${vehicle.id === currentVehicleId ? 'status-selected' : ''}">
+                            ${vehicle.status === 'completed' ? 'Completed' : vehicle.id === currentVehicleId ? 'Selected' : 'Processing'}
+                        </span>
+                    </div>
+                    <div class="vehicle-details">
+                        <div>Product: ${vehicle.product}</div>
+                        <div>Capacity: ${vehicle.capacity}</div>
+                    </div>
+                    <div class="vehicle-progress">
+                        <div>Step ${vehicle.step} of ${STEPS.length}</div>
+                        <div class="step-time-display">${vehicle.status === 'processing' ? formatTime(currentStepTime) : 'Completed'}</div>
+                    </div>
+                `;
+                vehicleList.appendChild(card);
+            });
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const totalVehicles = vehicles.length;
+            const activeVehicles = vehicles.filter(v => v.status === 'processing').length;
+            const completedVehicles = vehicles.filter(v => v.status === 'completed').length;
+            
+            // Calculate average process time
+            let totalTime = 0;
+            let count = 0;
+            vehicles.forEach(v => {
+                if (v.status === 'completed' && v.startTime && v.endTime) {
+                    const duration = (v.endTime - v.startTime) / 1000; // in seconds
+                    totalTime += duration;
+                    count++;
+                }
+            });
+            const avgProcessTime = count > 0 ? Math.round(totalTime / count / 60) : 0;
+            
+            document.getElementById('totalVehicles').textContent = totalVehicles;
+            document.getElementById('activeVehicles').textContent = activeVehicles;
+            document.getElementById('completedVehicles').textContent = completedVehicles;
+            document.getElementById('avgProcessTime').textContent = avgProcessTime;
+            
+            // Calculate average step times
+            const stepAverages = {};
+            const stepCounts = {};
+            
+            // Initialize step averages
+            for (let i = 1; i <= 8; i++) {
+                stepAverages[i] = 0;
+                stepCounts[i] = 0;
+            }
+            
+            // Accumulate step times
+            vehicles.forEach(v => {
+                if (v.status === 'completed') {
+                    for (let step = 1; step <= 8; step++) {
+                        if (v.stepTimes[step]) {
+                            stepAverages[step] += v.stepTimes[step];
+                            stepCounts[step]++;
+                        }
+                    }
+                }
+            });
+            
+            // Calculate averages
+            for (let step = 1; step <= 8; step++) {
+                if (stepCounts[step] > 0) {
+                    stepAverages[step] = (stepAverages[step] / stepCounts[step] / 60).toFixed(1);
+                } else {
+                    stepAverages[step] = '0.0';
+                }
+            }
+            
+            // Update UI
+            document.getElementById('avgLoadingSlip').textContent = stepAverages[1];
+            document.getElementById('avgGateIn').textContent = stepAverages[2];
+            document.getElementById('avgInitialWeight').textContent = stepAverages[3];
+            document.getElementById('avgLoading').textContent = stepAverages[4];
+            document.getElementById('avgFinalWeight').textContent = stepAverages[5];
+            document.getElementById('avgSealing').textContent = stepAverages[6];
+            document.getElementById('avgInvoice').textContent = stepAverages[7];
+            document.getElementById('avgGateOut').textContent = stepAverages[8];
+        }
+
+        // Update reports
+        function updateReports() {
+            const completedTable = document.querySelector('#completedVehiclesTable tbody');
+            const processTable = document.querySelector('#recentProcessTable tbody');
+            
+            // Clear existing rows
+            completedTable.innerHTML = '';
+            processTable.innerHTML = '';
+            
+            // Add completed vehicles to report
+            vehicles.filter(v => v.status === 'completed').forEach(vehicle => {
+                const startTime = formatTimeString(vehicle.startTime);
+                const endTime = formatTimeString(vehicle.endTime);
+                const duration = formatTime(Math.floor((vehicle.endTime - vehicle.startTime) / 1000));
+                
+                // Check if we have any images
+                const hasImages = Object.keys(vehicle.images).length > 0;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${vehicle.number}</td>
+                    <td>${vehicle.product}</td>
+                    <td>${vehicle.capacity}</td>
+                    <td>${startTime}</td>
+                    <td>${endTime}</td>
+                    <td>${duration}</td>
+                    <td>
+                        ${hasImages ? 
+                            '<i class="fas fa-camera" style="color:#ffd700;"></i> ' + 
+                            Object.keys(vehicle.images).length + ' images' : 
+                            '<i class="fas fa-times" style="color:#e74c3c;"></i> None'}
+                    </td>
+                `;
+                completedTable.appendChild(row);
+            });
+            
+            // Add recent process times (last 5 completed vehicles)
+            vehicles.filter(v => v.status === 'completed')
+                    .sort((a, b) => b.endTime - a.endTime)
+                    .slice(0, 5)
+                    .forEach(vehicle => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${vehicle.number}</td>
+                    <td>${formatTime(vehicle.stepTimes[1] || 0)}</td>
+                    <td>${formatTime(vehicle.stepTimes[2] || 0)}</td>
+                    <td>${formatTime(vehicle.stepTimes[3] || 0)}</td>
+                    <td>${formatTime(vehicle.stepTimes[4] || 0)}</td>
+                    <td>${formatTime(vehicle.stepTimes[5] || 0)}</td>
+                    <td>${formatTime(vehicle.stepTimes[6] || 0)}</td>
+                    <td>${formatTime(vehicle.stepTimes[7] || 0)}</td>
+                    <td>${formatTime(vehicle.stepTimes[8] || 0)}</td>
+                    <td>${formatTime(Object.values(vehicle.stepTimes).reduce((a, b) => a + b, 0))}</td>
+                `;
+                processTable.appendChild(row);
+            });
+        }
+
+        // Format time in MM:SS
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Format time to HH:MM:SS
+        function formatTimeString(date) {
+            return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        // Reset current process
+        function resetCurrentProcess() {
+            if (!currentVehicleId) return;
+            
+            if (confirm('Are you sure you want to reset this process? All progress will be lost.')) {
+                const vehicleIndex = vehicles.findIndex(v => v.id === currentVehicleId);
+                if (vehicleIndex === -1) return;
+                
+                vehicles.splice(vehicleIndex, 1);
+                currentVehicleId = null;
+                
+                // Update UI
+                document.getElementById('noVehicleSelected').style.display = 'block';
+                document.getElementById('vehicleStepControl').style.display = 'none';
+                clearInterval(timerInterval);
+                
+                updateVehicleList();
+                updateStatistics();
+                updateReports();
+                
+                showNotification('Process has been reset');
+            }
+        }
+
+        // Export combined report (both completed vehicles and recent process times)
+        function exportCombinedReport() {
+            const completedVehicles = vehicles.filter(v => v.status === 'completed');
+            
+            if (completedVehicles.length === 0) {
+                showNotification('No completed vehicles to export', true);
+                return;
+            }
+            
+            const data = [];
+            
+            // Add title and separator
+            data.push(['PETROLEUM VEHICLE OPERATIONS - COMBINED REPORT']);
+            data.push(['Generated on:', new Date().toLocaleString()]);
+            data.push(['']); // Empty row
+            
+            // Section 1: Completed Vehicles Report
+            data.push(['=== COMPLETED VEHICLES REPORT ===']);
+            data.push(['Vehicle', 'Product', 'Capacity', 'Start Time', 'End Time', 'Duration', 'Images Count']);
+            
+            completedVehicles.forEach(vehicle => {
+                const startTime = formatTimeString(vehicle.startTime);
+                const endTime = formatTimeString(vehicle.endTime);
+                const duration = formatTime(Math.floor((vehicle.endTime - vehicle.startTime) / 1000));
+                const imageCount = Object.keys(vehicle.images).length;
+                
+                data.push([
+                    vehicle.number,
+                    vehicle.product,
+                    vehicle.capacity,
+                    startTime,
+                    endTime,
+                    duration,
+                    imageCount
+                ]);
+            });
+            
+            // Add separator
+            data.push(['']); // Empty row
+            data.push(['']); // Empty row
+            
+            // Section 2: Recent Process Times (detailed step timings)
+            data.push(['=== DETAILED PROCESS TIMES REPORT ===']);
+            data.push([
+                'Vehicle', 
+                'Loading Slip', 
+                'Gate In', 
+                'Initial Weight', 
+                'Loading', 
+                'Final Weight', 
+                'Sealing', 
+                'Invoice', 
+                'Gate Out', 
+                'Total Time'
+            ]);
+            
+            completedVehicles
+                .sort((a, b) => b.endTime - a.endTime)
+                .forEach(vehicle => {
+                    const totalTime = Object.values(vehicle.stepTimes).reduce((a, b) => a + b, 0);
+                    data.push([
+                        vehicle.number,
+                        formatTime(vehicle.stepTimes[1] || 0),
+                        formatTime(vehicle.stepTimes[2] || 0),
+                        formatTime(vehicle.stepTimes[3] || 0),
+                        formatTime(vehicle.stepTimes[4] || 0),
+                        formatTime(vehicle.stepTimes[5] || 0),
+                        formatTime(vehicle.stepTimes[6] || 0),
+                        formatTime(vehicle.stepTimes[7] || 0),
+                        formatTime(vehicle.stepTimes[8] || 0),
+                        formatTime(totalTime)
+                    ]);
+                });
+            
+            // Add summary section
+            data.push(['']); // Empty row
+            data.push(['']); // Empty row
+            data.push(['=== SUMMARY STATISTICS ===']);
+            data.push(['Total Vehicles Processed:', completedVehicles.length]);
+            data.push(['Average Process Time (minutes):', Math.round(completedVehicles.reduce((sum, v) => {
+                const duration = (v.endTime - v.startTime) / 1000 / 60;
+                return sum + duration;
+            }, 0) / completedVehicles.length)]);
+            
+            // Export to CSV
+            exportToCSV(data, `petroleum_operations_combined_report_${new Date().toISOString().split('T')[0]}.csv`);
+            
+            showNotification('Combined report exported successfully!');
+        }
+
+        // Export recent process times
+        function exportRecentProcessTimes(format) {
+            const table = document.getElementById('recentProcessTable');
+            const rows = Array.from(table.querySelectorAll('tr'));
+            
+            if (rows.length <= 1) {
+                showNotification('No data to export', true);
+                return;
+            }
+            
+            const data = [];
+            
+            // Add headers
+            const headerRow = rows[0];
+            const headers = Array.from(headerRow.querySelectorAll('th')).map(th => th.textContent);
+            data.push(headers);
+            
+            // Add data rows
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const cols = Array.from(row.querySelectorAll('td')).map(td => td.textContent);
+                data.push(cols);
+            }
+            
+            // Export based on format
+            if (format === 'csv') {
+                exportToCSV(data, 'recent_process_times_report.csv');
+            } else if (format === 'excel') {
+                showNotification('Excel export would be implemented in a real application');
+            }
+        }
+        
+        // Export completed vehicles
+        function exportCompletedVehicles(format) {
+            const table = document.getElementById('completedVehiclesTable');
+            const rows = Array.from(table.querySelectorAll('tr'));
+            
+            if (rows.length <= 1) {
+                showNotification('No data to export', true);
+                return;
+            }
+            
+            const data = [];
+            
+            // Add headers
+            const headerRow = rows[0];
+            const headers = Array.from(headerRow.querySelectorAll('th')).map(th => th.textContent);
+            data.push(headers);
+            
+            // Add data rows
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const cols = Array.from(row.querySelectorAll('td')).map(td => {
+                    // Clean up the images column text
+                    let text = td.textContent.trim();
+                    if (text.includes('images')) {
+                        text = text.replace(/^\d+\s*images?$/, (match) => match.split(' ')[0]);
+                    } else if (text.includes('None')) {
+                        text = '0';
+                    }
+                    return text;
+                });
+                data.push(cols);
+            }
+            
+            // Export based on format
+            if (format === 'csv') {
+                exportToCSV(data, 'completed_vehicles_report.csv');
+            } else if (format === 'excel') {
+                showNotification('Excel export would be implemented in a real application');
+            }
+        }
+
+        // Export to CSV
+        function exportToCSV(data, filename) {
+            const csvContent = data.map(row => 
+                row.map(cell => {
+                    // Escape quotes and wrap in quotes if necessary
+                    const cellStr = String(cell || '');
+                    if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+                        return '"' + cellStr.replace(/"/g, '""') + '"';
+                    }
+                    return cellStr;
+                }).join(',')
+            ).join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('CSV file exported successfully!');
+        }
+
+        // Show notification
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            const messageElement = document.getElementById('notification-message');
+            
+            messageElement.textContent = message;
+            notification.className = 'notification show';
+            
+            if (isError) {
+                notification.classList.add('error');
+            } else {
+                notification.classList.remove('error');
+            }
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initDashboard();
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
